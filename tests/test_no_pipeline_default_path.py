@@ -15,6 +15,7 @@ def make_ctx(tmp_path, pipeline_file=None):
         pipeline_file=pipeline_file or str(tmp_path / "does-not-exist.yaml"),
         gpg_keys_dir=str(tmp_path / "gpg-keys"),
         output_dir=str(tmp_path / "output"),
+        upstream_repo=None,
     )
     return build_run_context(args)
 

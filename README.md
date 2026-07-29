@@ -206,6 +206,7 @@ HUM-4990/HUM-4789 for the ongoing discussion.
 | `--pipeline-file` | Override the `/pipeline.yaml` mount |
 | `--gpg-keys-dir` | Override the `/gpg-keys` mount |
 | `--output-dir` | Override the `/output` mount |
+| `--upstream-repo` | Canonical upstream repo URL, exposed as `${UPSTREAM_REPO}` |
 | `--debug` | Trace every stage/step transition and subprocess command run (argv, cwd, exit code, stdout/stderr) to stderr |
 
 ## Exit codes
@@ -219,11 +220,17 @@ HUM-4990/HUM-4789 for the ongoing discussion.
 ## Variable substitution
 
 `${VERSION}`, `${VERSION_MAJOR}`, `${VERSION_MINOR}`, `${VERSION_PATCH}`,
-`${OLD_VERSION}`, `${PACKAGE}`, `${SPEC_FILE}`, `${PACKAGE_DIR}` are available
-in any string value in the pipeline YAML. `${PACKAGE_DIR}` is the absolute
-path to the package's directory (i.e. `--package-dir`) -- useful in `run:`
-step scripts that need to reach files living alongside the spec file, such
-as a patch applied before running a build tool.
+`${OLD_VERSION}`, `${PACKAGE}`, `${SPEC_FILE}`, `${PACKAGE_DIR}`,
+`${UPSTREAM_REPO}` are available in any string value in the pipeline YAML.
+
+- `${PACKAGE_DIR}` is the absolute path to the package's directory (i.e.
+  `--package-dir`) -- useful in `run:` step scripts that need to reach files
+  living alongside the spec file, such as a patch applied before running a
+  build tool.
+- `${UPSTREAM_REPO}` is the value passed via `--upstream-repo`, if any --
+  useful for pointing `type: git`'s `repo:` at the same canonical URL a
+  caller already tracks elsewhere (e.g. its own package metadata), instead
+  of duplicating it in the pipeline YAML. Empty string if not passed.
 
 ## Local development
 

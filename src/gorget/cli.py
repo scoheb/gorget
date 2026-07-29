@@ -37,6 +37,11 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--gpg-keys-dir", default=None, help="Override the /gpg-keys mount")
     parser.add_argument("--output-dir", default=None, help="Override the /output mount")
     parser.add_argument(
+        "--upstream-repo",
+        default=None,
+        help="Canonical upstream repo URL, exposed as ${UPSTREAM_REPO}",
+    )
+    parser.add_argument(
         "--debug",
         action="store_true",
         help="Trace every stage/step transition and subprocess command run, to stderr",

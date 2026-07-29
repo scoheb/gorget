@@ -1,5 +1,6 @@
 """Variable substitution: ${VERSION}, ${VERSION_MAJOR}, ${VERSION_MINOR},
-${VERSION_PATCH}, ${OLD_VERSION}, ${PACKAGE}, ${SPEC_FILE}, ${PACKAGE_DIR}.
+${VERSION_PATCH}, ${OLD_VERSION}, ${PACKAGE}, ${SPEC_FILE}, ${PACKAGE_DIR},
+${UPSTREAM_REPO}.
 
 Substitution runs once, on the raw dict/list/string tree produced by the YAML
 loader, before it's turned into `PipelineSpec` dataclasses -- so the schema module
@@ -23,6 +24,7 @@ class SubstitutionVars:
     package: str
     spec_file: str
     package_dir: str = ""
+    upstream_repo: str = ""
 
     def _part(self, index: int) -> str:
         parts = self.version.split(".")
@@ -50,6 +52,7 @@ class SubstitutionVars:
             "PACKAGE": self.package,
             "SPEC_FILE": self.spec_file,
             "PACKAGE_DIR": self.package_dir,
+            "UPSTREAM_REPO": self.upstream_repo,
         }
 
 

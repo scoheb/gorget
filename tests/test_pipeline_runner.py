@@ -23,6 +23,7 @@ def make_ctx(tmp_path: Path):
         pipeline_file=str(tmp_path / "pipeline.yaml"),
         gpg_keys_dir=str(tmp_path / "gpg-keys"),
         output_dir=str(tmp_path / "output"),
+        upstream_repo=None,
     )
     return build_run_context(args)
 

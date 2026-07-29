@@ -53,6 +53,7 @@ def build_run_context(args: argparse.Namespace) -> RunContext:
         package=package_name,
         spec_file=spec_path.name,
         package_dir=str(package_dir),
+        upstream_repo=args.upstream_repo or "",
     )
 
     return RunContext(

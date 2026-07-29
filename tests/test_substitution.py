@@ -10,6 +10,7 @@ def make_vars(
     package="foo",
     spec_file="foo.spec",
     package_dir="/pkg",
+    upstream_repo="https://example.com/org/foo",
 ):
     return SubstitutionVars(
         version=version,
@@ -17,6 +18,7 @@ def make_vars(
         package=package,
         spec_file=spec_file,
         package_dir=package_dir,
+        upstream_repo=upstream_repo,
     )
 
 
@@ -40,10 +42,12 @@ def test_substitute_string_replaces_all_known_tokens():
     v = make_vars()
     result = substitute_string(
         "${PACKAGE}-${VERSION} (was ${OLD_VERSION}) major=${VERSION_MAJOR} "
-        "spec=${SPEC_FILE} dir=${PACKAGE_DIR}",
+        "spec=${SPEC_FILE} dir=${PACKAGE_DIR} repo=${UPSTREAM_REPO}",
         v,
     )
-    assert result == "foo-1.2.3 (was 1.2.2) major=1 spec=foo.spec dir=/pkg"
+    assert result == (
+        "foo-1.2.3 (was 1.2.2) major=1 spec=foo.spec dir=/pkg repo=https://example.com/org/foo"
+    )
 
 
 def test_substitute_string_old_version_none_becomes_empty():
