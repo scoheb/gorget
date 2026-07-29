@@ -5,7 +5,8 @@ Hello package as `../spec-source-demo`. Two things are demonstrated:
 
 1. **`gpg-signature`**: a real, non-mocked signature check against GNU
    Hello's actual upstream maintainer key -- no synthetic keypair involved.
-2. **Re-publication detection**: always-on when `/package/sources` exists,
+2. **Re-publication detection**: always-on when a `sources` file exists in
+   the package directory,
    comparing a freshly-fetched artifact's checksum against what's already
    recorded there, failing closed on a mismatch unless cured by an
    `accepted-checksums:` entry.
@@ -25,8 +26,9 @@ curl -s "https://keyserver.ubuntu.com/pks/lookup?op=get&options=mr&search=0x2409
   -o gpg-keys/hello-maintainer.asc
 ```
 
-This is exactly what a real `/gpg-keys` mount looks like: one armored public
-key file per trusted upstream, checked in once and reused across releases.
+This is exactly what a real `--gpg-keys-dir` directory looks like: one
+armored public key file per trusted upstream, checked in once and reused
+across releases.
 
 ## 1. Run: GPG signature verification
 

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "gorget"
 version = "0.1.8"
-description = "Containerized source-pipeline tool for RPM package supply-chain trust"
+description = "Source-pipeline tool for RPM package supply-chain trust"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { file = "LICENSE" }

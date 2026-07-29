@@ -19,7 +19,7 @@ from gorget.pipeline.runner import PipelineRunner
 def build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="gorget",
-        description="Containerized source-pipeline tool for RPM package supply-chain trust.",
+        description="Source-pipeline tool for RPM package supply-chain trust.",
     )
     parser.add_argument(
         "--version", dest="pkg_version", required=True, help="New upstream version to fetch"
@@ -32,10 +32,14 @@ def build_arg_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Run through the policy stage but skip emitting artifacts",
     )
-    parser.add_argument("--package-dir", default=None, help="Override the /package mount")
-    parser.add_argument("--pipeline-file", default=None, help="Override the /pipeline.yaml mount")
-    parser.add_argument("--gpg-keys-dir", default=None, help="Override the /gpg-keys mount")
-    parser.add_argument("--output-dir", default=None, help="Override the /output mount")
+    parser.add_argument("--package-dir", default=None, help="Package directory (default: /package)")
+    parser.add_argument(
+        "--pipeline-file", default=None, help="Pipeline YAML file (default: /pipeline.yaml)"
+    )
+    parser.add_argument(
+        "--gpg-keys-dir", default=None, help="GPG keys directory (default: /gpg-keys)"
+    )
+    parser.add_argument("--output-dir", default=None, help="Output directory (default: /output)")
     parser.add_argument(
         "--upstream-repo",
         default=None,

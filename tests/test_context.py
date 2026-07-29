@@ -64,7 +64,7 @@ def test_build_run_context_multiple_spec_files_raises(tmp_path):
         build_run_context(make_args(tmp_path))
 
 
-def test_build_run_context_uses_default_container_paths_when_not_overridden(tmp_path):
+def test_build_run_context_uses_default_paths_when_not_overridden(tmp_path):
     (tmp_path / "foo.spec").write_text("Name: foo\n")
     args = make_args(
         tmp_path,

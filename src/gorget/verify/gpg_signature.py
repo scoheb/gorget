@@ -1,8 +1,8 @@
 """`gpg-signature` verify step: verify a fetched artifact against a detached
-signature, using a keyring mounted at /gpg-keys.
+signature, using a keyring from the GPG keys directory (--gpg-keys-dir).
 
 Imports the keyring into a fresh, throwaway GPG homedir per check (rather than
-using --keyring directly against the mounted file) -- more robust across
+using --keyring directly against the keyring file) -- more robust across
 keyring file formats and modern GPG's keybox-format quirks.
 """
 

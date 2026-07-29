@@ -1,9 +1,14 @@
 # Gorget
 
-**Gorget** is a containerized source-pipeline tool for RPM package supply-chain
-trust. It fetches upstream source tarballs directly from their origin (rather
-than an intermediate lookaside cache), applies transforms, verifies integrity,
+**Gorget** is a source-pipeline tool for RPM package supply-chain trust. It
+fetches upstream source tarballs directly from their origin (rather than an
+intermediate lookaside cache), applies transforms, verifies integrity,
 enforces dependency policy, and emits lookaside-ready artifacts.
+
+It's a plain CLI tool, installed like any other build dependency (e.g. via
+RPM) and invoked directly -- its `fetch:`/`vendor:` steps already run
+untrusted third-party code the same way `go-vendor-tools`/`npm`/`cargo` do,
+so it doesn't need or get container isolation those tools don't have either.
 
 Each package gets a declarative `<package>.source-pipeline.yaml` describing
 exactly how its sources are produced. When no pipeline YAML exists, gorget
@@ -13,26 +18,30 @@ This is an early-stage implementation covering the **Fetch**, **Transform**,
 **Verify**, and **Policy** stages and the core framework (config parsing,
 variable substitution, the stage pipeline, and a minimal Emit).
 
-## Container interface
+## CLI interface
 
 ```
-podman run --rm \
-  -v ./<package-dir>:/package:ro \
-  -v ./pipeline.yaml:/pipeline.yaml:ro \
-  -v ./gpg-keys:/gpg-keys:ro \
-  -v ./output:/output \
-  gorget:latest \
+gorget \
+  --package-dir ./<package-dir> \
+  --pipeline-file ./pipeline.yaml \
+  --gpg-keys-dir ./gpg-keys \
+  --output-dir ./output \
   --version <new-version> \
   [--old-version <old-version>] \
   [--dry-run]
 ```
 
-| Mount | Purpose |
+| Flag | Purpose |
 |---|---|
-| `/package` (ro) | Package directory: spec file, patches, sources manifest |
-| `/pipeline.yaml` (ro) | The package's pipeline definition (optional) |
-| `/gpg-keys` (ro) | Centralized GPG keyrings, one armored/binary key file per trusted upstream, referenced by filename from `verify: gpg-signature` steps |
-| `/output` (rw) | Fetched tarballs, `sources` manifest, `report.json` |
+| `--package-dir` | Package directory: spec file, patches, sources manifest |
+| `--pipeline-file` | The package's pipeline definition (optional) |
+| `--gpg-keys-dir` | Centralized GPG keyrings, one armored/binary key file per trusted upstream, referenced by filename from `verify: gpg-signature` steps |
+| `--output-dir` | Fetched tarballs, `sources` manifest, `report.json` |
+
+Each of these has a historical default (`/package`, `/pipeline.yaml`,
+`/gpg-keys`, `/output` respectively, see [CLI flags](#cli-flags)) from
+gorget's original container-mount design, but every real caller passes all
+four explicitly -- there's no container providing them implicitly anymore.
 
 ## Pipeline steps
 
@@ -70,7 +79,7 @@ fetched, before Policy and Emit.
 
 | Step | Purpose |
 |---|---|
-| `gpg-signature` | Verify a detached GPG signature against a keyring mounted at `/gpg-keys` |
+| `gpg-signature` | Verify a detached GPG signature against a keyring in the GPG keys directory (`--gpg-keys-dir`) |
 | `checksum-file` | Verify an artifact's digest against an entry in a fetched checksums-listing file (e.g. `SHASUMS256.txt`) |
 
 ```yaml
@@ -78,7 +87,7 @@ verify:
   - type: gpg-signature
     target: "foo-1.2.3.tar.gz"        # output_name of an already-fetched artifact
     signature: "foo-1.2.3.tar.gz.asc"  # output_name of the fetched detached signature
-    keyring: "example-project.asc"      # filename within /gpg-keys
+    keyring: "example-project.asc"      # filename within --gpg-keys-dir
 
   - type: checksum-file
     target: "foo-1.2.3.tar.gz"
@@ -96,8 +105,8 @@ check (`gpg --homedir <tmp> --import ... && gpg --homedir <tmp> --verify
 ...`) rather than using `--keyring` directly, for robustness across keyring
 formats and modern GPG's keybox-format quirks.
 
-**Re-publication detection runs automatically whenever `/package/sources`
-exists** -- no `verify:` step needed to opt in, since it's the core
+**Re-publication detection runs automatically whenever a `sources` file
+exists in the package directory** -- no `verify:` step needed to opt in, since it's the core
 supply-chain safety net: every freshly-fetched artifact whose filename is
 already recorded in `sources` has its checksum recomputed (at whichever
 digest algorithm the existing entry uses) and compared, failing closed if
@@ -202,10 +211,10 @@ HUM-4990/HUM-4789 for the ongoing discussion.
 | `--version` | New upstream version to fetch (required) |
 | `--old-version` | Previous upstream version |
 | `--dry-run` | Run through the Policy stage but skip Emit; prints the report to stdout instead |
-| `--package-dir` | Override the `/package` mount, for local development |
-| `--pipeline-file` | Override the `/pipeline.yaml` mount |
-| `--gpg-keys-dir` | Override the `/gpg-keys` mount |
-| `--output-dir` | Override the `/output` mount |
+| `--package-dir` | Package directory (default: `/package`) |
+| `--pipeline-file` | Pipeline YAML file (default: `/pipeline.yaml`) |
+| `--gpg-keys-dir` | GPG keys directory (default: `/gpg-keys`) |
+| `--output-dir` | Output directory (default: `/output`) |
 | `--upstream-repo` | Canonical upstream repo URL, exposed as `${UPSTREAM_REPO}` |
 | `--debug` | Trace every stage/step transition and subprocess command run (argv, cwd, exit code, stdout/stderr) to stderr |
 

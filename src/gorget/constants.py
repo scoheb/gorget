@@ -1,4 +1,5 @@
-"""Default container-mount paths and other fixed constants."""
+"""Default paths (used when the corresponding --flag is omitted) and other
+fixed constants."""
 
 from __future__ import annotations
 

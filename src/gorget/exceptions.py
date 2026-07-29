@@ -1,6 +1,6 @@
 """Exception hierarchy mapping directly to process exit codes.
 
-Exit codes (per the container interface): 0 success, 1 transient error, 2 policy
+Exit codes (per the CLI): 0 success, 1 transient error, 2 policy
 violation. `cli.main()` is the sole place these are caught and translated.
 """
 

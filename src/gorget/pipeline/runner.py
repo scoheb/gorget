@@ -79,8 +79,9 @@ class PipelineRunner:
         return report
 
     def _build_initial_state(self, work_dir: Path, report: PipelineReport) -> StageState:
-        # /package is mounted read-only, so spec mutation (spec-update) always
-        # happens on a writable copy under the scratch work dir, never in place.
+        # The package directory is never written to during a pipeline run, so
+        # spec mutation (spec-update) always happens on a writable copy under
+        # the scratch work dir, never in place.
         work_spec_path = work_dir / self.ctx.spec_path.name
         work_spec_path.write_text(self.ctx.spec_path.read_text())
         return StageState(work_dir=work_dir, spec=SpecFile(work_spec_path), report=report)

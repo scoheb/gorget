@@ -2,7 +2,7 @@ fetch:
   # Reset Release to 1 before resolving Source URLs -- a no-op here since the
   # spec already declares Release: 1, but this is where a real version bump
   # would happen. spec-update always edits a writable copy of the spec, never
-  # the read-only /package mount.
+  # the package directory itself.
   - type: spec-update
     reset-release: "1"
 
